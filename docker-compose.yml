@@ -1,0 +1,145 @@
+version: '3.7'
+
+services:
+  redis1:
+    image: i_redis_node_1
+    build: 
+      context: ./DockerFile
+      dockerfile: redis.Dockerfile
+    container_name: redis-node1
+    ports:
+      - "${NODE_1_PORT}:${NODE_1_PORT}"
+      - "${NODE_1_BUS_PORT}:${NODE_1_BUS_PORT}"
+    environment:
+      NODE_NO: 1
+      EXTERNAL_IP: ${EXTERNAL_IP}
+      PORT: ${NODE_1_PORT}
+      BUS_PORT: ${NODE_1_BUS_PORT}
+    volumes:
+      - ./data/node1:/data
+    healthcheck:
+      test: [ "CMD", "redis-cli", "-p", "7001", "cluster", "info" ]
+      interval: 1s
+      timeout: 3s
+      retries: 30
+  redis2:
+    image: i_redis_node_2
+    build: 
+      context: ./DockerFile
+      dockerfile: redis.Dockerfile
+    container_name: redis-node2
+    ports:
+      - "${NODE_2_PORT}:${NODE_2_PORT}"
+      - "${NODE_2_BUS_PORT}:${NODE_2_BUS_PORT}"
+    environment:
+      NODE_NO: 2
+      EXTERNAL_IP: ${EXTERNAL_IP}
+      PORT: ${NODE_2_PORT}
+      BUS_PORT: ${NODE_2_BUS_PORT}
+    volumes:
+      - ./data/node2:/data
+    healthcheck:
+      test: [ "CMD", "redis-cli", "-p", "7002", "cluster", "info" ]
+      interval: 1s
+      timeout: 3s
+      retries: 30
+  redis3:
+    image: i_redis_node_3
+    build: 
+      context: ./DockerFile
+      dockerfile: redis.Dockerfile
+    container_name: redis-node3
+    ports:
+      - "${NODE_3_PORT}:${NODE_3_PORT}"
+      - "${NODE_3_BUS_PORT}:${NODE_3_BUS_PORT}"
+    environment:
+      NODE_NO: 3
+      EXTERNAL_IP: ${EXTERNAL_IP}
+      PORT: ${NODE_3_PORT}
+      BUS_PORT: ${NODE_3_BUS_PORT}
+    volumes:
+      - ./data/node3:/data
+    healthcheck:
+      test: [ "CMD", "redis-cli", "-p", "7003", "cluster", "info" ]
+      interval: 1s
+      timeout: 3s
+      retries: 30
+  redis4:
+    image: i_redis_node_4
+    build: 
+      context: ./DockerFile
+      dockerfile: redis.Dockerfile
+    container_name: redis-node4
+    ports:
+      - "${NODE_4_PORT}:${NODE_4_PORT}"
+      - "${NODE_4_BUS_PORT}:${NODE_4_BUS_PORT}"
+    environment:
+      NODE_NO: 4
+      EXTERNAL_IP: ${EXTERNAL_IP}
+      PORT: ${NODE_4_PORT}
+      BUS_PORT: ${NODE_4_PORT}
+    volumes:
+      - ./data/node4:/data
+    healthcheck:
+      test: [ "CMD", "redis-cli", "-p", "7004", "cluster", "info" ]
+      interval: 1s
+      timeout: 3s
+      retries: 30
+  redis5:
+    image: i_redis_node_5
+    build: 
+      context: ./DockerFile
+      dockerfile: redis.Dockerfile
+    container_name: redis-node5
+    ports:
+      - "${NODE_5_PORT}:${NODE_5_PORT}"
+      - "${NODE_5_BUS_PORT}:${NODE_5_BUS_PORT}"
+    environment:
+      NODE_NO: 5
+      EXTERNAL_IP: ${EXTERNAL_IP}
+      PORT: ${NODE_5_PORT}
+      BUS_PORT: ${NODE_5_BUS_PORT}
+    volumes:
+      - ./data/node5:/data
+    healthcheck:
+      test: [ "CMD", "redis-cli", "-p", "7005", "cluster", "info" ]
+      interval: 1s
+      timeout: 3s
+      retries: 30
+  redis6:
+    image: i_redis_node_6
+    build: 
+      context: ./DockerFile
+      dockerfile: redis.Dockerfile
+    container_name: redis-node6
+    ports:
+      - "${NODE_6_PORT}:${NODE_6_PORT}"
+      - "${NODE_6_BUS_PORT}:${NODE_6_BUS_PORT}"
+    environment:
+      NODE_NO: 6
+      EXTERNAL_IP: ${EXTERNAL_IP}
+      PORT: ${NODE_6_PORT}
+      BUS_PORT: ${NODE_6_BUS_PORT}
+    volumes:
+      - ./data/node6:/data
+    healthcheck:
+      test: [ "CMD", "redis-cli", "-p", "7006", "cluster", "info" ]
+      interval: 1s
+      timeout: 3s
+      retries: 30
+  redis-cluster-creator:
+    image: redis
+    entrypoint: [/bin/sh,-c,'echo "yes" | redis-cli --cluster create redis1:7001 redis2:7002 redis3:7003 redis4:7004 redis5:7005 redis6:7006 --cluster-replicas 1']
+    depends_on:
+      redis1:
+        condition: service_healthy
+      redis2:
+        condition: service_healthy
+      redis3:
+        condition: service_healthy
+      redis4:
+        condition: service_healthy
+      redis5:
+        condition: service_healthy
+      redis6:
+        condition: service_healthy
